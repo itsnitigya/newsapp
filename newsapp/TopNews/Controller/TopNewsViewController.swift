@@ -11,6 +11,7 @@ import DropDown
 import SafariServices
 
 class TopNewsViewController: UIViewController{
+    var viewModel = NewsViewModel()
     var articles : ArticleResponse? {
         didSet {
             DispatchQueue.main.async {
@@ -97,40 +98,23 @@ class TopNewsViewController: UIViewController{
     }
     
     func fetchNews(category: String, page: Int, pageSize: Int) {
-        let url = "https://newsapi.org/v2/top-headlines?country=us&category=\(category)&apiKey=\(apiKey)&page=\(page)&pageSize=\(pageSize)"
-        let request = AF.request(url)
-        request.responseDecodable(of: ArticleResponse.self) { [weak self] (response) in
-            guard let self = self else { return }
-            guard let news = response.value else { return }
-            if(self.articles == nil) {
-                self.articles = news
-            } else {
-                self.articles?.articles.append(contentsOf: news.articles)
-            }
-            DispatchQueue.main.async {
-                self.moreSpinner.stopAnimating()
-            }
-          }
-      }
+        viewModel.apiToGetNewsData(category: category, page: page, pageSize: pageSize) { [weak self] in
+             self?.articles = self?.viewModel.newsData
+        }
+    }
 }
 
 
 extension TopNewsViewController:  UITableViewDelegate, UITableViewDataSource {
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath) as! TopNewsTableCell
-        cell.headingLabel.text = articles?.articles[indexPath.item].title
-        cell.authorLabel.text = articles?.articles[indexPath.item].source.name
-        cell.contentLabel.text = articles?.articles[indexPath.item].content
-        guard let url = articles?.articles[indexPath.item].urlToImage else {
-            cell.image.image = UIImage(named: "noImage")
-            return cell
-        }
-        cell.image.setImage(urlString: url)
+        cell.cellViewModel = self.viewModel.getCellViewModel(at: indexPath)
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let url = URL(string: self.articles?.articles[indexPath.item].url ?? "") else {
+        guard let url = URL(string: self.viewModel.newsData?.articles[indexPath.row].url ?? "") else {
             return
         }
         let vc = SFSafariViewController(url: url)
@@ -149,6 +133,6 @@ extension TopNewsViewController:  UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.articles?.articles.count ?? 0
+        return self.viewModel.newsData?.articles.count ?? 0
     }
 }

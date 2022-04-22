@@ -3,4 +3,6 @@ target 'newsapp' do
     pod 'DropDown'
     pod 'GoogleMaps'
     pod 'GooglePlaces'
+    pod 'RxSwift'
+    pod 'RxCocoa'
 end
