@@ -8,14 +8,25 @@
 import UIKit
 import Alamofire
 import DropDown
+import SafariServices
 
-class TopNewsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource{
-    
-    var articles : ArticleResponse?
+class TopNewsViewController: UIViewController{
+    var viewModel = NewsViewModel()
+    var articles : ArticleResponse? {
+        didSet {
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+                self.spinner.stopAnimating()
+            }
+        }
+    }
     let dropDown = DropDown()
     let spinner = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.medium)
+    let moreSpinner = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.medium)
+    var fetchMoreData = false
     var page: Int = 0
     var category: String = "general"
+    fileprivate let cellId: String = "cellID"
     
     lazy var tableView: UITableView = {
         let tv = UITableView()
@@ -23,12 +34,13 @@ class TopNewsViewController: UIViewController, UITableViewDelegate, UITableViewD
         tv.dataSource = self
         tv.clipsToBounds = true
         tv.layer.masksToBounds = true
-        tv.register(TopNewsTableCell.self, forCellReuseIdentifier: "cellId")
+        tv.register(TopNewsTableCell.self, forCellReuseIdentifier: cellId)
         tv.backgroundColor = .clear
         tv.separatorStyle = .none
         tv.layer.cornerRadius = 10
         tv.allowsSelection = true
         tv.translatesAutoresizingMaskIntoConstraints = false
+        tv.rowHeight = UITableView.automaticDimension
         tv.separatorInset = UIEdgeInsets(top: 16, left: 0, bottom: 0, right: 0)
         return tv
     }()
@@ -50,16 +62,30 @@ class TopNewsViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
-        navigationItem.title = "Top Headlines"
-        view.addSubview(tableView)
-        view.addSubview(dropDownButton)
-        dropDownButton.anchorWithConstants(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, bottom: nil, right: nil, topConstant: 16, leftConstant: 16, bottomConstant: 0, rightConstant: 0)
-        tableView.anchorWithConstants(top: dropDownButton.bottomAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, topConstant: 16, leftConstant: 16, bottomConstant: 16, rightConstant: 16)
+        setupNavBar()
+        setupViews()
         setupDropDown()
+        spinner.startAnimating()
         fetchNews(category: category, page: page, pageSize: 10)
     }
     
+    func setupNavBar(){
+        view.backgroundColor = .white
+        navigationItem.title = "Top Headlines"
+    }
+    
+    func setupViews(){
+        view.addSubview(tableView)
+        view.addSubview(dropDownButton)
+        view.addSubview(moreSpinner)
+        moreSpinner.translatesAutoresizingMaskIntoConstraints = false
+        tableView.backgroundView = spinner
+        dropDownButton.anchorWithConstants(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, bottom: nil, right: nil, topConstant: 16, leftConstant: 16, bottomConstant: 0, rightConstant: 0)
+        moreSpinner.anchorWithConstants(top: nil, left: nil, bottom: view.safeAreaLayoutGuide.bottomAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 16, rightConstant: 0)
+        moreSpinner.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        tableView.anchorWithConstants(top: dropDownButton.bottomAnchor, left: view.leftAnchor, bottom: moreSpinner.topAnchor, right: view.rightAnchor, topConstant: 16, leftConstant: 16, bottomConstant: 4, rightConstant: 16)
+    }
+        
     func setupDropDown(){
         dropDown.anchorView = dropDownButton
         dropDown.dataSource =  ["general", "business", "entertainment", "health", "science", "sports", "technology"]
@@ -72,64 +98,41 @@ class TopNewsViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func fetchNews(category: String, page: Int, pageSize: Int) {
-        spinner.startAnimating()
-        tableView.backgroundView = spinner
-        let url = "https://newsapi.org/v2/top-headlines?country=us&category=\(category)&apiKey=\(apiKey)&page=\(page)&pageSize=\(pageSize)"
-        let request = AF.request(url)
-        request.responseDecodable(of: ArticleResponse.self) { (response) in
-            guard let news = response.value else { return }
-            print(news.totalResults)
-            if(self.articles == nil) {
-                self.articles = news
-            } else {
-                self.articles?.articles.append(contentsOf: news.articles)
-            }
-            self.tableView.reloadData()
-            self.spinner.stopAnimating()
-          }
-      }
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 100
+        viewModel.apiToGetNewsData(category: category, page: page, pageSize: pageSize) { [weak self] in
+             self?.articles = self?.viewModel.newsData
+        }
     }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
-    }
+}
+
+
+extension TopNewsViewController:  UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cellId", for: indexPath) as! TopNewsTableCell
-        cell.headingLabel.text = articles?.articles[indexPath.item].title
-        cell.authorLabel.text = articles?.articles[indexPath.item].source.name
-        cell.contentLabel.text = articles?.articles[indexPath.item].content
-        guard let url = self.articles?.articles[indexPath.item].urlToImage else {
-            return cell
-        }
-        let URL = URL(string: url)
-        DispatchQueue.global().async {
-            let data = try? Data(contentsOf: URL!) //make sure your image in this url does exist, otherwise unwrap in a if let check /
-            DispatchQueue.main.async {
-                cell.image.image = UIImage(data: data!)
-            }
-        }
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath) as! TopNewsTableCell
+        cell.cellViewModel = self.viewModel.getCellViewModel(at: indexPath)
         return cell
     }
     
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-//        if(indexPath.item >= 9) {
-//            page = page + 1
-//            fetchNews(category: category, page: page, pageSize: 10)
-//        }
-    }
-    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print(indexPath.row)
-        guard let url = self.articles?.articles[indexPath.item].url else {
+        guard let url = URL(string: self.viewModel.newsData?.articles[indexPath.row].url ?? "") else {
             return
         }
-        if let URL = URL(string: url) {
-            UIApplication.shared.open(URL)
-        }
+        let vc = SFSafariViewController(url: url)
+        present(vc, animated: true)
         tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if indexPath.row + 1 == self.articles?.articles.count {
+            DispatchQueue.main.async {
+                self.moreSpinner.startAnimating()
+            }
+            self.page = self.page + 1
+            fetchNews(category: self.category, page: page, pageSize: 10)
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return self.viewModel.newsData?.articles.count ?? 0
     }
 }
