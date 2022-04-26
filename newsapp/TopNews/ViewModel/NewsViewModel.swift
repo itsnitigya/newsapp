@@ -10,12 +10,11 @@ import Alamofire
 
 class NewsViewModel {
     
-    var newsData : ArticleResponse?
-    private var baseUrl = URL(string: "https://newsapi.org/v2/top-headlines?country=us")!
-    
+    weak var delegate: DataModelDelegate?
     var newsCellViewModel = [NewsCellViewModel]()
 
-    func apiToGetNewsData(category: String, page: Int, pageSize: Int, completion : @escaping () -> ()) {
+    func apiToGetNewsData(category: String, page: Int, pageSize: Int) {
+        var baseUrl = URL(string: "https://newsapi.org/v2/top-headlines?country=us")!
         baseUrl.appendQueryItem(name: "category", value: category)
         baseUrl.appendQueryItem(name: "page", value: String(page))
         baseUrl.appendQueryItem(name: "pageSize", value: String(pageSize))
@@ -24,19 +23,14 @@ class NewsViewModel {
         request.responseDecodable(of: ArticleResponse.self) { [weak self] (response) in
             guard let self = self else { return }
             guard let news = response.value else { return }
-            if(self.newsData == nil) {
-                self.newsData = news
-            } else {
-                self.newsData?.articles.append(contentsOf: news.articles)
-            }
-            self.createCellModel(newsData: self.newsData!)
-            completion()
+            self.createCellModel(newsData: news.articles)
+            self.delegate?.didRecieveDataUpdate(data: self.newsCellViewModel, count: news.articles.count)
           }
     }
     
-    func createCellModel(newsData: ArticleResponse) {
+    func createCellModel(newsData: [Article]) {
         var newsCellViewModel = [NewsCellViewModel]()
-        for news in newsData.articles {
+        for news in newsData {
             let url = news.url ?? ""
             let imageUrl = news.urlToImage ?? ""
             let heading = news.title
@@ -44,10 +38,11 @@ class NewsViewModel {
             let content = news.content
             newsCellViewModel.append(NewsCellViewModel(url: url, imageURL: imageUrl, heading: heading, author: author, content: content))
         }
-        self.newsCellViewModel = newsCellViewModel
+        self.newsCellViewModel.append(contentsOf: newsCellViewModel)
     }
-    
-    func getCellViewModel(at indexPath: IndexPath) -> NewsCellViewModel {
-           return newsCellViewModel[indexPath.row]
-    }
+}
+
+
+protocol DataModelDelegate: AnyObject {
+    func didRecieveDataUpdate(data: [NewsCellViewModel], count: Int)
 }

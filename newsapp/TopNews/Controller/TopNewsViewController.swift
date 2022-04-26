@@ -10,25 +10,31 @@ import Alamofire
 import DropDown
 import SafariServices
 
+enum Category : String, CaseIterable {
+    case general
+    case business
+    case entertainment
+    case health
+    case science
+    case sports
+    case technology
+}
+
 class TopNewsViewController: UIViewController{
-    var viewModel = NewsViewModel()
-    var articles : ArticleResponse? {
-        didSet {
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
-                self.spinner.stopAnimating()
-            }
-        }
-    }
-    let dropDown = DropDown()
-    let spinner = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.medium)
-    let moreSpinner = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.medium)
-    var fetchMoreData = false
-    var page: Int = 0
-    var category: String = "general"
+    private var viewModel = NewsViewModel()
+    private var cellViewData = [NewsCellViewModel]()
+    private var lastFetchedCount = 0
+    private let dropDown = DropDown()
+    private let spinner = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.medium)
+    private let moreSpinner = UIActivityIndicatorView(style: UIActivityIndicatorView.Style.medium)
+    private var fetchMoreData = false
+    private var page: Int = 1
+    private var pageSize: Int = 10
+    private var category: Category = Category.general
     fileprivate let cellId: String = "cellID"
+    private var isLoading = true
     
-    lazy var tableView: UITableView = {
+    private lazy var tableView: UITableView = {
         let tv = UITableView()
         tv.delegate = self
         tv.dataSource = self
@@ -56,12 +62,9 @@ class TopNewsViewController: UIViewController{
         return button
     }()
     
-    @objc private func handleDropDownButton() {
-        dropDown.show()
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
+        viewModel.delegate = self
         setupNavBar()
         setupViews()
         setupDropDown()
@@ -88,18 +91,35 @@ class TopNewsViewController: UIViewController{
         
     func setupDropDown(){
         dropDown.anchorView = dropDownButton
-        dropDown.dataSource =  ["general", "business", "entertainment", "health", "science", "sports", "technology"]
+        var dataSource = [String]()
+        Category.allCases.forEach {
+            dataSource.append($0.rawValue)
+        }
+        dropDown.dataSource =  dataSource
         dropDown.selectionAction = { [unowned self] (index: Int, item: String) in
             dropDownButton.setTitle(item, for: UIControl.State())
             dropDown.hide()
-            category = item
-            fetchNews(category: item, page: page, pageSize: 10)
+            category = Category(rawValue: item) ?? Category.general
+            fetchNews(category: category, page: page, pageSize: pageSize)
         }
     }
     
-    func fetchNews(category: String, page: Int, pageSize: Int) {
-        viewModel.apiToGetNewsData(category: category, page: page, pageSize: pageSize) { [weak self] in
-             self?.articles = self?.viewModel.newsData
+    @objc private func handleDropDownButton() {
+        dropDown.show()
+    }
+    
+    func fetchNews(category: Category, page: Int, pageSize: Int) {
+        viewModel.apiToGetNewsData(category: category.rawValue, page: page, pageSize: pageSize)
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let offY = scrollView.contentOffset.y
+        let contentHeight = scrollView.contentSize.height
+        if offY > abs(contentHeight - scrollView.frame.height) &&
+           !isLoading {
+            self.isLoading = true
+            self.page = self.page + 1
+            fetchNews(category: category, page: page, pageSize: pageSize)
         }
     }
 }
@@ -109,12 +129,12 @@ extension TopNewsViewController:  UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath) as! TopNewsTableCell
-        cell.cellViewModel = self.viewModel.getCellViewModel(at: indexPath)
+        cell.cellViewModel = cellViewData[indexPath.row]
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let url = URL(string: self.viewModel.newsData?.articles[indexPath.row].url ?? "") else {
+        guard let url = URL(string: cellViewData[indexPath.row].url) else {
             return
         }
         let vc = SFSafariViewController(url: url)
@@ -122,17 +142,29 @@ extension TopNewsViewController:  UITableViewDelegate, UITableViewDataSource {
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if indexPath.row + 1 == self.articles?.articles.count {
-            DispatchQueue.main.async {
-                self.moreSpinner.startAnimating()
-            }
-            self.page = self.page + 1
-            fetchNews(category: self.category, page: page, pageSize: 10)
-        }
-    }
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.viewModel.newsData?.articles.count ?? 0
+        return self.cellViewData.count
     }
+}
+
+extension TopNewsViewController: DataModelDelegate {
+      func didRecieveDataUpdate(data: [NewsCellViewModel], count: Int ) {
+          self.cellViewData = data
+          self.lastFetchedCount = count
+          var indexPaths = [IndexPath]()
+          if(self.lastFetchedCount < 1) {
+              return
+          }
+          for i in 0...self.lastFetchedCount - 1 {
+              let indexPath = IndexPath(row: (self.page - 1) * self.pageSize + i, section: 0)
+              indexPaths.append(indexPath)
+          }
+          DispatchQueue.main.async {
+              self.tableView.beginUpdates()
+              self.tableView.insertRows(at: indexPaths, with: .bottom)
+              self.tableView.endUpdates()
+              self.spinner.stopAnimating()
+          }
+          self.isLoading = false
+      }
 }
