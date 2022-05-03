@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct NewsCellViewModel {
+struct NewsCellModel: Hashable {
     let url: String
     let imageURL: String
     let heading: String?

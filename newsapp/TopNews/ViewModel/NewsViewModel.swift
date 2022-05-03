@@ -11,38 +11,50 @@ import Alamofire
 class NewsViewModel {
     
     weak var delegate: DataModelDelegate?
-    var newsCellViewModel = [NewsCellViewModel]()
-
-    func apiToGetNewsData(category: String, page: Int, pageSize: Int) {
-        var baseUrl = URL(string: "https://newsapi.org/v2/top-headlines?country=us")!
-        baseUrl.appendQueryItem(name: "category", value: category)
-        baseUrl.appendQueryItem(name: "page", value: String(page))
-        baseUrl.appendQueryItem(name: "pageSize", value: String(pageSize))
-        baseUrl.appendQueryItem(name: "apiKey", value: apiKey)
-        let request = AF.request(baseUrl)
-        request.responseDecodable(of: ArticleResponse.self) { [weak self] (response) in
+    var newsCellModel = [NewsCellModel]()
+    
+    func apiToGetNewsData(category: String?, page: Int, pageSize: Int, search: String?) {
+        if(category == "error") {
+            self.delegate?.didRecieveError()
+            return
+        }
+        var queryItems = [URLQueryItem(name: "country", value: "us"),
+                          URLQueryItem(name: "page", value: String(page)),
+                          URLQueryItem(name: "pageSize", value: String(pageSize)),
+                          URLQueryItem(name: "apiKey", value: apiKey)]
+        if search != nil {
+            queryItems.append(URLQueryItem(name: "q", value: search))
+        } else {
+            queryItems.append(URLQueryItem(name: "category", value: category))
+        }
+        let router = Router(routerSettings: .getNews, queryItems: queryItems)
+        ServiceLayer.request(router: router) { [weak self] (result: DataResponse<ArticleResponse, AFError>) in
             guard let self = self else { return }
-            guard let news = response.value else { return }
-            self.createCellModel(newsData: news.articles)
-            self.delegate?.didRecieveDataUpdate(data: self.newsCellViewModel, count: news.articles.count)
-          }
+            if result.error != nil || result.value == nil {
+                self.delegate?.didRecieveError()
+                return
+            }
+            self.createCellModel(newsData: result.value!.articles)
+            self.delegate?.didRecieveDataUpdate(data: self.newsCellModel, count: result.value!.articles.count)
+        }
     }
     
     func createCellModel(newsData: [Article]) {
-        var newsCellViewModel = [NewsCellViewModel]()
+        var newsCellModel = [NewsCellModel]()
         for news in newsData {
             let url = news.url ?? ""
             let imageUrl = news.urlToImage ?? ""
             let heading = news.title
             let author = news.source.name
             let content = news.content
-            newsCellViewModel.append(NewsCellViewModel(url: url, imageURL: imageUrl, heading: heading, author: author, content: content))
+            newsCellModel.append(NewsCellModel(url: url, imageURL: imageUrl, heading: heading, author: author, content: content))
         }
-        self.newsCellViewModel.append(contentsOf: newsCellViewModel)
+        self.newsCellModel.append(contentsOf: newsCellModel)
     }
 }
 
 
 protocol DataModelDelegate: AnyObject {
-    func didRecieveDataUpdate(data: [NewsCellViewModel], count: Int)
+    func didRecieveDataUpdate(data: [NewsCellModel], count: Int)
+    func didRecieveError()
 }
