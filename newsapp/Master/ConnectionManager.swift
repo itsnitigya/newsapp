@@ -5,8 +5,6 @@
 //  Created by Nitigya Kapoor on 30/04/22.
 //
 
-import Foundation
-
 import SystemConfiguration
 
 public class Reachability {

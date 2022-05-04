@@ -5,8 +5,6 @@
 //  Created by Nitigya Kapoor on 30/04/22.
 //
 
-import Foundation
-
 public enum HomeSettings {
     case searchNews
     case locationNews

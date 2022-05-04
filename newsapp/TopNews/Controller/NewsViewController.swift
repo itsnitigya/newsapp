@@ -187,7 +187,7 @@ class NewsViewController: UIViewController {
         super.viewDidLoad()
         viewModel.delegate = self
         setupNavBar()
-        setupView(pageType: self.pageType)
+        setupView(pageType: pageType)
         
     }
     
@@ -206,7 +206,7 @@ class NewsViewController: UIViewController {
     
     func setupNavBar() {
         view.backgroundColor = .white
-        navigationItem.title = self.navigationTitle
+        navigationItem.title = navigationTitle
     }
     
     func setupTableView() {
@@ -299,7 +299,7 @@ class NewsViewController: UIViewController {
             pageType.self != .display &&
             state.self != .noInternet {
             state = State.loading
-            self.page += 1
+            page += 1
             fetchNews(category: category, page: page, pageSize: pageSize, search: searchedText)
         }
     }
@@ -311,7 +311,7 @@ class NewsViewController: UIViewController {
             return
         }
         for index in 0...count - 1 {
-            let indexPath = IndexPath(row: (self.page - 1) * self.pageSize + index, section: 0)
+            let indexPath = IndexPath(row: (page - 1) * pageSize + index, section: 0)
             indexPaths.append(indexPath)
         }
         DispatchQueue.main.async {
@@ -366,7 +366,7 @@ extension NewsViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.cellViewData.count
+        return cellViewData.count
     }
 }
 

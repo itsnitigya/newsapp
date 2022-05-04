@@ -6,29 +6,10 @@
 //
 
 import UIKit
-import Alamofire
-
-let imageCache = NSCache<AnyObject, AnyObject>()
+import SDWebImage
 
 extension UIImageView {
     func setImage(urlString: String) {
-        guard let url = URL(string: urlString) else { return }
-        image = nil
-        
-        if let imageFromCache = imageCache.object(forKey: urlString as AnyObject) {
-            image = imageFromCache as? UIImage
-            return
-        }
-        AF.request(url).response { [weak self] response in
-            guard let self = self else { return }
-            switch response.result {
-            case .success(let data):
-                guard let imageToCache = UIImage(data: data!) else { return }
-                imageCache.setObject(imageToCache, forKey: urlString as AnyObject)
-                self.image = UIImage(data: data!)
-            case .failure:
-                self.image = UIImage(named: "noImage")
-            }
-        }
+        sd_setImage(with: URL(string: urlString), placeholderImage: UIImage(named: "NoImage"))
     }
 }

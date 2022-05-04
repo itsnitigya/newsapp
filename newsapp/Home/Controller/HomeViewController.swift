@@ -75,19 +75,19 @@ class HomeViewController: UIViewController {
     func setupTableView() {
         let headerView = UIView(frame: CGRect(x: 0,
                                               y: 0,
-                                              width: self.tableView.frame.width,
+                                              width: tableView.frame.width,
                                               height: 35))
         let footerView = UIView(frame: CGRect(x: 0,
                                               y: 0,
-                                              width: self.tableView.frame.width,
+                                              width: tableView.frame.width,
                                               height: 35))
         headerView.addSubview(headingLabel)
         headingLabel.text = String(localized: "home_screen_title")
         footerView.addSubview(bottomLabel)
         bottomLabel.text = "Made with ❤️"
         
-        self.tableView.tableHeaderView = headerView
-        self.tableView.tableFooterView = footerView
+        tableView.tableHeaderView = headerView
+        tableView.tableFooterView = footerView
     }
     
     func setupViews() {
@@ -128,14 +128,14 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     @objc func subscribeTapped(_ sender: UIButton) {
         var viewController = data[sender.tag].router as! UIViewController
         if sender.tag == 3 {
-            viewController = NewsViewController(cellViewData: self.cellViewData,
+            viewController = NewsViewController(cellViewData: cellViewData,
                                                 pageType: .display, title: "Viewed Headlines")
         }
-        self.navigationController?.pushViewController(viewController, animated: true)
+        navigationController?.pushViewController(viewController, animated: true)
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return self.viewedArticles ? 4 : 3
+        return viewedArticles ? 4 : 3
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {

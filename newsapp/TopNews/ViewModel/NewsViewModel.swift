@@ -5,7 +5,6 @@
 //  Created by Nitigya Kapoor on 21/04/22.
 //
 
-import Foundation
 import Alamofire
 
 class NewsViewModel {
@@ -13,7 +12,7 @@ class NewsViewModel {
     var newsCellModel = [NewsCellModel]()
     func apiToGetNewsData(category: String?, page: Int, pageSize: Int, search: String?) {
         if category == "error" {
-            self.delegate?.didRecieveError()
+            delegate?.didRecieveError()
             return
         }
         var queryItems = [URLQueryItem(name: "country", value: "us"),

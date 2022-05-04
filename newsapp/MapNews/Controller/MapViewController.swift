@@ -92,7 +92,7 @@ extension MapsViewController: UICollectionViewDelegate, UICollectionViewDataSour
         cell.headingLabel.text = articles?.articles[indexPath.item].title
         cell.authorLabel.text = articles?.articles[indexPath.item].source.name
         cell.contentLabel.text = articles?.articles[indexPath.item].content
-        guard let url = self.articles?.articles[indexPath.item].urlToImage else {
+        guard let url = articles?.articles[indexPath.item].urlToImage else {
             cell.image.image = UIImage(named: "noImage")
             return cell
         }

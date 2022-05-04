@@ -5,8 +5,6 @@
 //  Created by Nitigya Kapoor on 13/04/22.
 //
 
-import Foundation
-
 struct ArticleResponse: Codable {
     let status: String
     let totalResults: Int

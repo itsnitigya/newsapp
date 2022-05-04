@@ -5,7 +5,6 @@
 //  Created by Nitigya Kapoor on 15/04/22.
 //
 
-import Foundation
 import UIKit
 
 class MapNewsCell: UICollectionViewCell {
