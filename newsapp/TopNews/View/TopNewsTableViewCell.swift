@@ -7,7 +7,7 @@
 
 import UIKit
 
-class TopNewsTableCell: UITableViewCell {
+class TopNewsTableViewCell: UITableViewCell {
     
     lazy var contentImage: UIImageView = {
         let iv = UIImageView()
@@ -43,7 +43,7 @@ class TopNewsTableCell: UITableViewCell {
         return label
     }()
     
-    var cellViewModel: NewsCellViewModel? {
+    var cellViewModel: NewsCellModel? {
         didSet {
             headingLabel.text = cellViewModel?.heading
             authorLabel.text = cellViewModel?.author
