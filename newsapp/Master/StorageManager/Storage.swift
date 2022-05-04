@@ -42,7 +42,8 @@ class DataManager: NSObject {
         do {
             let result = try managedContext.fetch(fetchRequst) as! [News]
             let data = result.map({ (ele: News) -> NewsCellModel in
-                return NewsCellModel(url: ele.url ?? "", imageURL: ele.imageUrl ?? "", heading: ele.heading ?? "", author: ele.author ?? "", content: ele.content ?? "")
+                return NewsCellModel(url: ele.url ?? "", imageURL: ele.imageUrl ?? "",
+                                     heading: ele.heading ?? "", author: ele.author ?? "", content: ele.content ?? "")
             })
             return data
         } catch let error as NSError {

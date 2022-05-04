@@ -374,6 +374,7 @@
 				8B504BEF28059A8700DCE72A /* Frameworks */,
 				8B504BF028059A8700DCE72A /* Resources */,
 				87D567184967928FA32CA797 /* [CP] Copy Pods Resources */,
+				8B31380C2822991A00D3CC66 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -530,6 +531,23 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-newsapp/Pods-newsapp-resources.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		8B31380C2822991A00D3CC66 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif which swiftlint > /dev/null; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

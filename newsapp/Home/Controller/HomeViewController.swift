@@ -10,27 +10,28 @@ import UIKit
 class HomeViewController: UIViewController {
     
     private var viewedArticles = false
-    private var data = [HomeSettings.searchNews, HomeSettings.locationNews, HomeSettings.topNews, HomeSettings.viewedNews]
+    private var data = [HomeSettings.searchNews, HomeSettings.locationNews,
+                        HomeSettings.topNews, HomeSettings.viewedNews]
     private var cellViewData = [NewsCellModel]()
     
     private lazy var tableView: UITableView = {
-        let tv = UITableView()
-        tv.delegate = self
-        tv.dataSource = self
-        tv.clipsToBounds = true
-        tv.layer.masksToBounds = true
-        tv.register(HomeViewTableCell.self, forCellReuseIdentifier: "cellId")
-        tv.backgroundColor = .clear
-        tv.separatorStyle = .none
-        tv.layer.cornerRadius = 10
-        tv.allowsSelection = false
-        tv.translatesAutoresizingMaskIntoConstraints = false
-        tv.rowHeight = UITableView.automaticDimension
-        tv.separatorInset = UIEdgeInsets(top: 16, left: 0, bottom: 0, right: 0)
-        return tv
+        let tView = UITableView()
+        tView.delegate = self
+        tView.dataSource = self
+        tView.clipsToBounds = true
+        tView.layer.masksToBounds = true
+        tView.register(HomeViewTableCell.self, forCellReuseIdentifier: "cellId")
+        tView.backgroundColor = .clear
+        tView.separatorStyle = .none
+        tView.layer.cornerRadius = 10
+        tView.allowsSelection = false
+        tView.translatesAutoresizingMaskIntoConstraints = false
+        tView.rowHeight = UITableView.automaticDimension
+        tView.separatorInset = UIEdgeInsets(top: 16, left: 0, bottom: 0, right: 0)
+        return tView
     }()
     
-    lazy var headingLabel : UILabel = {
+    lazy var headingLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 2
         label.font = UIFont.boldSystemFont(ofSize: 32)
@@ -38,7 +39,7 @@ class HomeViewController: UIViewController {
         return label
     }()
     
-    lazy var bottomLabel : UILabel = {
+    lazy var bottomLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 2
         label.font = UIFont.boldSystemFont(ofSize: 24)
@@ -47,18 +48,17 @@ class HomeViewController: UIViewController {
         return label
     }()
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         setupViews()
         setupTableView()
         NotificationCenter.default.addObserver(self, selector: #selector(viewArticles),
-                                               name: NSNotification.Name ("com.user.view.article"),
+                                               name: NSNotification.Name("com.user.view.article"),
                                                object: nil)
     }
     
-    @objc func viewArticles(_ notification: Notification){
+    @objc func viewArticles(_ notification: Notification) {
         if viewedArticles == false {
             let indexSet = IndexSet(integer: 3)
             DispatchQueue.main.async {
@@ -72,7 +72,7 @@ class HomeViewController: UIViewController {
         viewedArticles = true
     }
     
-    func setupTableView(){
+    func setupTableView() {
         let headerView = UIView(frame: CGRect(x: 0,
                                               y: 0,
                                               width: self.tableView.frame.width,
@@ -90,10 +90,11 @@ class HomeViewController: UIViewController {
         self.tableView.tableFooterView = footerView
     }
     
-    
-    func setupViews(){
+    func setupViews() {
         view.addSubview(tableView)
-        tableView.anchorWithConstants(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, right: view.rightAnchor, topConstant: 16, leftConstant: 16, bottomConstant: 16, rightConstant: 16)
+        tableView.anchorWithConstants(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor,
+                                      bottom: view.safeAreaLayoutGuide.bottomAnchor, right: view.rightAnchor,
+                                      topConstant: 16, leftConstant: 16, bottomConstant: 16, rightConstant: 16)
     }
     
 }
@@ -124,12 +125,13 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         return cell
     }
     
-    @objc func subscribeTapped(_ sender: UIButton){
-        var vc = data[sender.tag].router as! UIViewController
+    @objc func subscribeTapped(_ sender: UIButton) {
+        var viewController = data[sender.tag].router as! UIViewController
         if sender.tag == 3 {
-            vc = NewsViewController(cellViewData: self.cellViewData, pageType: .display, title: "Viewed Headlines")
+            viewController = NewsViewController(cellViewData: self.cellViewData,
+                                                pageType: .display, title: "Viewed Headlines")
         }
-        self.navigationController?.pushViewController(vc, animated: true)
+        self.navigationController?.pushViewController(viewController, animated: true)
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {

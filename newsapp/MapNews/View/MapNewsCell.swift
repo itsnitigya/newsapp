@@ -8,9 +8,8 @@
 import Foundation
 import UIKit
 
-class MapNewsCell: UICollectionViewCell{
-    
-    lazy var image : UIImageView = {
+class MapNewsCell: UICollectionViewCell {
+    lazy var image: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.layer.cornerRadius = 15
@@ -19,7 +18,7 @@ class MapNewsCell: UICollectionViewCell{
         return imageView
     }()
     
-    lazy var headingLabel : UILabel = {
+    lazy var headingLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 2
         label.font = UIFont.boldSystemFont(ofSize: 13)
@@ -27,8 +26,7 @@ class MapNewsCell: UICollectionViewCell{
         return label
     }()
     
-    
-    lazy var authorLabel : UILabel = {
+    lazy var authorLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 1
         label.font = UIFont.systemFont(ofSize: 13)
@@ -36,7 +34,7 @@ class MapNewsCell: UICollectionViewCell{
         return label
     }()
     
-    lazy var contentLabel : UILabel = {
+    lazy var contentLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
         label.font = UIFont.systemFont(ofSize: 13)
@@ -49,7 +47,7 @@ class MapNewsCell: UICollectionViewCell{
         setupLayout()
     }
     
-    fileprivate func setupLayout(){
+    fileprivate func setupLayout() {
         backgroundColor = .white
         layer.cornerRadius = 12
         
@@ -67,16 +65,20 @@ class MapNewsCell: UICollectionViewCell{
         
         headingLabel.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 16).isActive = true
         headingLabel.leadingAnchor.constraint(equalTo: image.trailingAnchor, constant: 16).isActive = true
-        headingLabel.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -16).isActive = true
+        headingLabel.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor,
+                                               constant: -16).isActive = true
 
         authorLabel.topAnchor.constraint(equalTo: headingLabel.bottomAnchor, constant: 4).isActive = true
         authorLabel.leadingAnchor.constraint(equalTo: image.trailingAnchor, constant: 16).isActive = true
-        authorLabel.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -16).isActive = true
+        authorLabel.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor,
+                                              constant: -16).isActive = true
        
         contentLabel.topAnchor.constraint(equalTo: authorLabel.bottomAnchor, constant: 4).isActive = true
         contentLabel.leadingAnchor.constraint(equalTo: image.trailingAnchor, constant: 16).isActive = true
-        contentLabel.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -16).isActive = true
-        contentLabel.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -16).isActive = true
+        contentLabel.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor,
+                                               constant: -16).isActive = true
+        contentLabel.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor,
+                                             constant: -16).isActive = true
     }
     
     required init?(coder aDecoder: NSCoder) {

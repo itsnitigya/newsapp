@@ -9,12 +9,10 @@ import Foundation
 import Alamofire
 
 class NewsViewModel {
-    
     weak var delegate: DataModelDelegate?
     var newsCellModel = [NewsCellModel]()
-    
     func apiToGetNewsData(category: String?, page: Int, pageSize: Int, search: String?) {
-        if(category == "error") {
+        if category == "error" {
             self.delegate?.didRecieveError()
             return
         }
@@ -47,12 +45,12 @@ class NewsViewModel {
             let heading = news.title
             let author = news.source.name
             let content = news.content
-            newsCellModel.append(NewsCellModel(url: url, imageURL: imageUrl, heading: heading, author: author, content: content))
+            newsCellModel.append(NewsCellModel(url: url, imageURL: imageUrl, heading: heading,
+                                               author: author, content: content))
         }
         self.newsCellModel.append(contentsOf: newsCellModel)
     }
 }
-
 
 protocol DataModelDelegate: AnyObject {
     func didRecieveDataUpdate(data: [NewsCellModel], count: Int)

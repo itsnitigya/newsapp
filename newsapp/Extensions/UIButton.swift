@@ -18,4 +18,3 @@ extension UIButton {
         layer.rasterizationScale = scale ? UIScreen.main.scale : 1
     }
 }
-

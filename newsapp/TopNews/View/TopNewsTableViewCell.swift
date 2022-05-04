@@ -10,15 +10,15 @@ import UIKit
 class TopNewsTableViewCell: UITableViewCell {
     
     lazy var contentImage: UIImageView = {
-        let iv = UIImageView()
-        iv.translatesAutoresizingMaskIntoConstraints = false
-        iv.layer.cornerRadius = 15
-        iv.layer.masksToBounds = true
-        iv.contentMode = .scaleAspectFill
-        return iv
+        let iView = UIImageView()
+        iView.translatesAutoresizingMaskIntoConstraints = false
+        iView.layer.cornerRadius = 15
+        iView.layer.masksToBounds = true
+        iView.contentMode = .scaleAspectFill
+        return iView
     }()
     
-    lazy var headingLabel : UILabel = {
+    lazy var headingLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 2
         label.font = UIFont.boldSystemFont(ofSize: 13)
@@ -26,8 +26,7 @@ class TopNewsTableViewCell: UITableViewCell {
         return label
     }()
     
-    
-    lazy var authorLabel : UILabel = {
+    lazy var authorLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 1
         label.font = UIFont.systemFont(ofSize: 13)
@@ -35,7 +34,7 @@ class TopNewsTableViewCell: UITableViewCell {
         return label
     }()
     
-    lazy var contentLabel : UILabel = {
+    lazy var contentLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
         label.font = UIFont.systemFont(ofSize: 13)
@@ -51,7 +50,6 @@ class TopNewsTableViewCell: UITableViewCell {
             contentImage.setImage(urlString: cellViewModel?.imageURL ?? "")
         }
     }
-    
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -72,15 +70,18 @@ class TopNewsTableViewCell: UITableViewCell {
         
         headingLabel.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 16).isActive = true
         headingLabel.leadingAnchor.constraint(equalTo: contentImage.trailingAnchor, constant: 16).isActive = true
-        headingLabel.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -16).isActive = true
+        headingLabel.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -16)
+                    .isActive = true
 
         authorLabel.topAnchor.constraint(equalTo: headingLabel.bottomAnchor, constant: 4).isActive = true
         authorLabel.leadingAnchor.constraint(equalTo: contentImage.trailingAnchor, constant: 16).isActive = true
-        authorLabel.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -16).isActive = true
+        authorLabel.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -16)
+                    .isActive = true
        
         contentLabel.topAnchor.constraint(equalTo: authorLabel.bottomAnchor, constant: 4).isActive = true
         contentLabel.leadingAnchor.constraint(equalTo: contentImage.trailingAnchor, constant: 16).isActive = true
-        contentLabel.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -16).isActive = true
+        contentLabel.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -16)
+                    .isActive = true
         contentLabel.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -16).isActive = true
     }
     

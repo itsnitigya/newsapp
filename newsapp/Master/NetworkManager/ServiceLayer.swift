@@ -8,7 +8,7 @@
 import Alamofire
 
 class ServiceLayer {
-    class func request<T: Codable>(router: Router, completion: @escaping (DataResponse<T, AFError>) -> ()) {
+    class func request<T: Codable>(router: Router, completion: @escaping (DataResponse<T, AFError>) -> Void) {
         var components = URLComponents()
         components.scheme = router.routerSettings.scheme
         components.host = router.routerSettings.host

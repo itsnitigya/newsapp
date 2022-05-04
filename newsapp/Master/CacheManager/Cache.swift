@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 @propertyWrapper
 struct Storage<T> {
     private let key: String
@@ -27,7 +26,6 @@ struct Storage<T> {
         }
     }
 }
-
 
 struct AppData {
     @Storage(key: "category", defaultValue: "general")

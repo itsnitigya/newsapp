@@ -1,3 +1,4 @@
+
 target 'newsapp' do
     pod 'Alamofire', '~> 5.5'
     pod 'DropDown'
@@ -5,4 +6,5 @@ target 'newsapp' do
     pod 'GooglePlaces'
     pod 'RxSwift'
     pod 'RxCocoa'
+    pod 'SwiftLint'
 end

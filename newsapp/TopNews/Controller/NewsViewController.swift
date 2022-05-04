@@ -11,7 +11,7 @@ import DropDown
 import SafariServices
 import Combine
 
-enum Category : String, CaseIterable {
+enum Category: String, CaseIterable {
     case general
     case business
     case entertainment
@@ -36,8 +36,7 @@ enum PageType {
     case search
 }
 
-
-class NewsViewController: UIViewController{
+class NewsViewController: UIViewController {
     private var cellViewData: [NewsCellModel]
     private let pageType: PageType
     private let navigationTitle: String
@@ -77,7 +76,7 @@ class NewsViewController: UIViewController{
                 }
             case .loading:
                 DispatchQueue.main.async {
-                    if(self.page > 1) {
+                    if self.page > 1 {
                         self.moreSpinner.startAnimating()
                     } else {
                         self.spinner.startAnimating()
@@ -115,20 +114,20 @@ class NewsViewController: UIViewController{
     }
     
     private lazy var tableView: UITableView = {
-        let tv = UITableView()
-        tv.delegate = self
-        tv.dataSource = self
-        tv.clipsToBounds = true
-        tv.layer.masksToBounds = true
-        tv.register(TopNewsTableViewCell.self, forCellReuseIdentifier: cellId)
-        tv.backgroundColor = .clear
-        tv.separatorStyle = .none
-        tv.layer.cornerRadius = 10
-        tv.allowsSelection = true
-        tv.translatesAutoresizingMaskIntoConstraints = false
-        tv.rowHeight = UITableView.automaticDimension
-        tv.separatorInset = UIEdgeInsets(top: 16, left: 0, bottom: 0, right: 0)
-        return tv
+        let tView = UITableView()
+        tView.delegate = self
+        tView.dataSource = self
+        tView.clipsToBounds = true
+        tView.layer.masksToBounds = true
+        tView.register(TopNewsTableViewCell.self, forCellReuseIdentifier: cellId)
+        tView.backgroundColor = .clear
+        tView.separatorStyle = .none
+        tView.layer.cornerRadius = 10
+        tView.allowsSelection = true
+        tView.translatesAutoresizingMaskIntoConstraints = false
+        tView.rowHeight = UITableView.automaticDimension
+        tView.separatorInset = UIEdgeInsets(top: 16, left: 0, bottom: 0, right: 0)
+        return tView
     }()
     
     private lazy var refreshControl: UIRefreshControl = {
@@ -192,7 +191,7 @@ class NewsViewController: UIViewController{
         
     }
     
-    func setupView(pageType: PageType){
+    func setupView(pageType: PageType) {
         switch pageType {
         case .display:
             setupTableView()
@@ -205,45 +204,59 @@ class NewsViewController: UIViewController{
         }
     }
     
-    func setupNavBar(){
+    func setupNavBar() {
         view.backgroundColor = .white
         navigationItem.title = self.navigationTitle
     }
     
-    func setupTableView(){
+    func setupTableView() {
         view.addSubview(tableView)
         tableView.backgroundView = spinner
-        tableView.anchorWithConstants(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, right: view.rightAnchor, topConstant: 16, leftConstant: 16, bottomConstant: 4, rightConstant: 16)
+        tableView.anchorWithConstants(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor,
+                                      bottom: view.safeAreaLayoutGuide.bottomAnchor, right: view.rightAnchor,
+                                      topConstant: 16, leftConstant: 16, bottomConstant: 4, rightConstant: 16)
     }
     
-    func setupIndicators(){
+    func setupIndicators() {
         view.addSubview(moreSpinner)
         view.addSubview(noDataView)
         view.addSubview(footerView)
         view.addSubview(dropDownButton)
         moreSpinner.translatesAutoresizingMaskIntoConstraints = false
-        moreSpinner.anchorWithConstants(top: nil, left: nil, bottom: view.safeAreaLayoutGuide.bottomAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 16, rightConstant: 0)
+        moreSpinner.anchorWithConstants(top: nil, left: nil, bottom: view.safeAreaLayoutGuide.bottomAnchor,
+                                        right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 16,
+                                        rightConstant: 0)
         moreSpinner.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        dropDownButton.anchorWithConstants(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, bottom: nil, right: nil, topConstant: 16, leftConstant: 16, bottomConstant: 0, rightConstant: 0)
+        dropDownButton.anchorWithConstants(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor,
+                                           bottom: nil, right: nil, topConstant: 16, leftConstant: 16,
+                                           bottomConstant: 0, rightConstant: 0)
         noDataView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         noDataView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        footerView.anchorWithConstants(top: nil, left: nil, bottom: view.safeAreaLayoutGuide.bottomAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 16, rightConstant: 0)
+        footerView.anchorWithConstants(top: nil, left: nil, bottom: view.safeAreaLayoutGuide.bottomAnchor,
+                                       right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 16,
+                                       rightConstant: 0)
         footerView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
     }
     
-    func setupSearch(){
+    func setupSearch() {
         setupIndicators()
         view.addSubview(tableView)
         view.addSubview(searchBar)
-        searchBar.anchorWithConstants(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, topConstant: 16, leftConstant: 16, bottomConstant: 0, rightConstant: 16)
-        tableView.anchorWithConstants(top: searchBar.bottomAnchor, left: view.leftAnchor, bottom: moreSpinner.topAnchor, right: view.rightAnchor, topConstant: 16, leftConstant: 16, bottomConstant: 4, rightConstant: 16)
+        searchBar.anchorWithConstants(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor,
+                                      bottom: nil, right: view.rightAnchor, topConstant: 16,
+                                      leftConstant: 16, bottomConstant: 0, rightConstant: 16)
+        tableView.anchorWithConstants(top: searchBar.bottomAnchor, left: view.leftAnchor,
+                                      bottom: moreSpinner.topAnchor, right: view.rightAnchor,
+                                      topConstant: 16, leftConstant: 16, bottomConstant: 4, rightConstant: 16)
         tableView.backgroundView = spinner
     }
     
-    func setupCategory(){
+    func setupCategory() {
         setupIndicators()
         view.addSubview(tableView)
-        tableView.anchorWithConstants(top: dropDownButton.bottomAnchor, left: view.leftAnchor, bottom: moreSpinner.topAnchor, right: view.rightAnchor, topConstant: 16, leftConstant: 16, bottomConstant: 4, rightConstant: 16)
+        tableView.anchorWithConstants(top: dropDownButton.bottomAnchor, left: view.leftAnchor,
+                                      bottom: moreSpinner.topAnchor, right: view.rightAnchor,
+                                      topConstant: 16, leftConstant: 16, bottomConstant: 4, rightConstant: 16)
         tableView.backgroundView = spinner
         tableView.addSubview(refreshControl)
         setupDropDown()
@@ -253,13 +266,13 @@ class NewsViewController: UIViewController{
         fetchNews(category: category, page: page, pageSize: pageSize, search: nil)
     }
     
-    func setupDropDown(){
+    func setupDropDown() {
         dropDown.anchorView = dropDownButton
         let dataSource = Category.allCases.map({ (ele: Category) -> String in
             return ele.rawValue
         })
         dropDown.dataSource = dataSource
-        dropDown.selectionAction = { [unowned self] (index: Int, item: String) in
+        dropDown.selectionAction = { [unowned self] (_: Int, item: String) in
             dropDownButton.setTitle(item, for: UIControl.State())
             dropDown.hide()
             category = Category(rawValue: item) ?? Category.general
@@ -286,19 +299,19 @@ class NewsViewController: UIViewController{
             pageType.self != .display &&
             state.self != .noInternet {
             state = State.loading
-            self.page = self.page + 1
+            self.page += 1
             fetchNews(category: category, page: page, pageSize: pageSize, search: searchedText)
         }
     }
     
-    func updateTableView(data: [NewsCellModel], count: Int){
+    func updateTableView(data: [NewsCellModel], count: Int) {
         var indexPaths = [IndexPath]()
-        if(count < 1) {
+        if count < 1 {
             state = State.noMoreData
             return
         }
-        for i in 0...count - 1 {
-            let indexPath = IndexPath(row: (self.page - 1) * self.pageSize + i, section: 0)
+        for index in 0...count - 1 {
+            let indexPath = IndexPath(row: (self.page - 1) * self.pageSize + index, section: 0)
             indexPaths.append(indexPath)
         }
         DispatchQueue.main.async {
@@ -311,7 +324,8 @@ class NewsViewController: UIViewController{
     }
     
     func applyCombineSearch() {
-        let publisher = NotificationCenter.default.publisher(for: UISearchTextField.textDidChangeNotification, object: searchBar.searchTextField)
+        let publisher = NotificationCenter.default.publisher(for: UISearchTextField.textDidChangeNotification,
+                                                                object: searchBar.searchTextField)
         publisher
             .map {
                 ($0.object as! UISearchTextField).text
@@ -328,8 +342,7 @@ class NewsViewController: UIViewController{
     }
 }
 
-
-extension NewsViewController:  UITableViewDelegate, UITableViewDataSource {
+extension NewsViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath) as! TopNewsTableViewCell
         cell.cellViewModel = cellViewData[indexPath.row]
@@ -341,14 +354,14 @@ extension NewsViewController:  UITableViewDelegate, UITableViewDataSource {
             return
         }
         if pageType.self != .display {
-            let dataDict : [AnyHashable: Any] = [
+            let dataDict: [AnyHashable: Any] = [
                 "content": cellViewData[indexPath.row]
             ]
             NotificationCenter.default.post(name: Notification.Name("com.user.view.article"),
                                             object: nil, userInfo: dataDict)
         }
-        let vc = SFSafariViewController(url: url)
-        present(vc, animated: true)
+        let viewController = SFSafariViewController(url: url)
+        present(viewController, animated: true)
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
