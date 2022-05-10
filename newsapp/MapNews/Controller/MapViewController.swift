@@ -88,7 +88,7 @@ class MapsViewController: UIViewController, CLLocationManagerDelegate {
 extension MapsViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView,
                         cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cellId", for: indexPath) as! MapNewsCell
+        let cell: MapNewsCell = collectionView.dequeueReusableCell(indexPath: indexPath)
         cell.headingLabel.text = articles?.articles[indexPath.item].title
         cell.authorLabel.text = articles?.articles[indexPath.item].source.name
         cell.contentLabel.text = articles?.articles[indexPath.item].content

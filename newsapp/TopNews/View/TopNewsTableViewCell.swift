@@ -90,3 +90,5 @@ class TopNewsTableViewCell: UITableViewCell {
     }
     
 }
+
+extension TopNewsTableViewCell: ReusableView {}
