@@ -9,7 +9,13 @@ import Alamofire
 
 class NewsViewModel {
     weak var delegate: DataModelDelegate?
+    let network = ServiceLayer()
     var newsCellModel = [NewsCellModel]()
+    
+    init() {
+        network.delegate = self
+    }
+    
     func apiToGetNewsData(category: String?, page: Int, pageSize: Int, search: String?) {
         if category == "error" {
             delegate?.didRecieveError()
@@ -25,15 +31,7 @@ class NewsViewModel {
             queryItems.append(URLQueryItem(name: "category", value: category))
         }
         let router = Router(routerSettings: .getNews, queryItems: queryItems)
-        ServiceLayer.request(router: router) { [weak self] (result: DataResponse<ArticleResponse, AFError>) in
-            guard let self = self else { return }
-            if result.error != nil || result.value == nil {
-                self.delegate?.didRecieveError()
-                return
-            }
-            self.createCellModel(newsData: result.value!.articles)
-            self.delegate?.didRecieveDataUpdate(data: self.newsCellModel, count: result.value!.articles.count)
-        }
+        network.getData(router: router)
     }
     
     func createCellModel(newsData: [Article]) {
@@ -48,6 +46,17 @@ class NewsViewModel {
                                                author: author, content: content))
         }
         self.newsCellModel.append(contentsOf: newsCellModel)
+    }
+}
+
+extension NewsViewModel: NetworkResponseDelegate {
+    func parseResponse(data: ArticleResponse) {
+        createCellModel(newsData: data.articles)
+        self.delegate?.didRecieveDataUpdate(data: self.newsCellModel, count: data.articles.count)
+    }
+    
+    func handleError() {
+        delegate?.didRecieveError()
     }
 }
 

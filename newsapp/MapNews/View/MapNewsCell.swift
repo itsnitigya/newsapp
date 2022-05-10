@@ -84,3 +84,5 @@ class MapNewsCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 }
+
+extension MapNewsCell: ReusableView {}

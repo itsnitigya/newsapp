@@ -40,7 +40,9 @@ class DataManager: NSObject {
         let managedContext = getContext()!
         let fetchRequst = NSFetchRequest<NSFetchRequestResult>(entityName: "News")
         do {
-            let result = try managedContext.fetch(fetchRequst) as! [News]
+            guard let result = try managedContext.fetch(fetchRequst) as? [News] else {
+                return nil
+            }
             let data = result.map({ (ele: News) -> NewsCellModel in
                 return NewsCellModel(url: ele.url ?? "", imageURL: ele.imageUrl ?? "",
                                      heading: ele.heading ?? "", author: ele.author ?? "", content: ele.content ?? "")

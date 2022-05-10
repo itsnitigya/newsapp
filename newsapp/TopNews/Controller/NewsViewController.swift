@@ -119,7 +119,6 @@ class NewsViewController: UIViewController {
         tView.dataSource = self
         tView.clipsToBounds = true
         tView.layer.masksToBounds = true
-        tView.register(TopNewsTableViewCell.self, forCellReuseIdentifier: cellId)
         tView.backgroundColor = .clear
         tView.separatorStyle = .none
         tView.layer.cornerRadius = 10
@@ -137,10 +136,10 @@ class NewsViewController: UIViewController {
         return refresh
     }()
     
-    lazy var searchBar: UISearchBar = {
-        let search = UISearchBar()
-        search.placeholder = "search"
-        search.translatesAutoresizingMaskIntoConstraints = false
+    lazy var searchBar: UISearchController = {
+        let search = UISearchController()
+        search.searchBar.placeholder = "search"
+        search.searchBar.translatesAutoresizingMaskIntoConstraints = false
         return search
     }()
     
@@ -207,6 +206,20 @@ class NewsViewController: UIViewController {
     func setupNavBar() {
         view.backgroundColor = .white
         navigationItem.title = navigationTitle
+        navigationController?.navigationBar.titleTextAttributes = [
+            .foregroundColor: UIColor.black,
+            .font: UIFont(name: "MarkerFelt-Thin", size: 20)!
+        ]
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            image: UIImage(named: "previous")!.withRenderingMode(.alwaysOriginal),
+            style: .plain,
+            target: self,
+            action: #selector(popToPrevious)
+        )
+    }
+    
+    @objc private func popToPrevious() {
+        navigationController?.popViewController(animated: true)
     }
     
     func setupTableView() {
@@ -221,15 +234,11 @@ class NewsViewController: UIViewController {
         view.addSubview(moreSpinner)
         view.addSubview(noDataView)
         view.addSubview(footerView)
-        view.addSubview(dropDownButton)
         moreSpinner.translatesAutoresizingMaskIntoConstraints = false
         moreSpinner.anchorWithConstants(top: nil, left: nil, bottom: view.safeAreaLayoutGuide.bottomAnchor,
                                         right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 16,
                                         rightConstant: 0)
         moreSpinner.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        dropDownButton.anchorWithConstants(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor,
-                                           bottom: nil, right: nil, topConstant: 16, leftConstant: 16,
-                                           bottomConstant: 0, rightConstant: 0)
         noDataView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         noDataView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         footerView.anchorWithConstants(top: nil, left: nil, bottom: view.safeAreaLayoutGuide.bottomAnchor,
@@ -241,11 +250,8 @@ class NewsViewController: UIViewController {
     func setupSearch() {
         setupIndicators()
         view.addSubview(tableView)
-        view.addSubview(searchBar)
-        searchBar.anchorWithConstants(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor,
-                                      bottom: nil, right: view.rightAnchor, topConstant: 16,
-                                      leftConstant: 16, bottomConstant: 0, rightConstant: 16)
-        tableView.anchorWithConstants(top: searchBar.bottomAnchor, left: view.leftAnchor,
+        navigationItem.searchController = searchBar
+        tableView.anchorWithConstants(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor,
                                       bottom: moreSpinner.topAnchor, right: view.rightAnchor,
                                       topConstant: 16, leftConstant: 16, bottomConstant: 4, rightConstant: 16)
         tableView.backgroundView = spinner
@@ -254,6 +260,10 @@ class NewsViewController: UIViewController {
     func setupCategory() {
         setupIndicators()
         view.addSubview(tableView)
+        view.addSubview(dropDownButton)
+        dropDownButton.anchorWithConstants(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor,
+                                           bottom: nil, right: nil, topConstant: 16, leftConstant: 16,
+                                           bottomConstant: 0, rightConstant: 0)
         tableView.anchorWithConstants(top: dropDownButton.bottomAnchor, left: view.leftAnchor,
                                       bottom: moreSpinner.topAnchor, right: view.rightAnchor,
                                       topConstant: 16, leftConstant: 16, bottomConstant: 4, rightConstant: 16)
@@ -325,14 +335,16 @@ class NewsViewController: UIViewController {
     
     func applyCombineSearch() {
         let publisher = NotificationCenter.default.publisher(for: UISearchTextField.textDidChangeNotification,
-                                                                object: searchBar.searchTextField)
+                                                                object: searchBar.searchBar.searchTextField)
         publisher
             .map {
-                ($0.object as! UISearchTextField).text
+                ($0.object as? UISearchTextField)?.text
             }
             .debounce(for: .milliseconds(500), scheduler: RunLoop.main)
             .sink(receiveValue: { (value) in
-                DispatchQueue.global(qos: .userInteractive).async { [weak self] in
+                let startInterval = NSDate().timeIntervalSince1970
+                DispatchQueue.global(qos: .background).async { [weak self] in
+                    print("time taken:", NSDate().timeIntervalSince1970 - startInterval)
                     guard let self = self else { return }
                     self.fetchNews(category: self.category, page: self.page, pageSize: self.pageSize, search: value)
                     self.searchedText = value ?? ""
@@ -344,7 +356,7 @@ class NewsViewController: UIViewController {
 
 extension NewsViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath) as! TopNewsTableViewCell
+        let cell: TopNewsTableViewCell = tableView.dequeueReusableCell(indexPath: indexPath)
         cell.cellViewModel = cellViewData[indexPath.row]
         return cell
     }

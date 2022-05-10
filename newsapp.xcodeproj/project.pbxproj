@@ -34,6 +34,7 @@
 		8B504C3E28060ECC00DCE72A /* TopNewsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B504C3D28060ECC00DCE72A /* TopNewsTableViewCell.swift */; };
 		8B504C42280840D700DCE72A /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B504C41280840D700DCE72A /* MapViewController.swift */; };
 		8B504C452809734400DCE72A /* MapNewsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B504C442809734400DCE72A /* MapNewsCell.swift */; };
+		8B8A7605282935D400B1A461 /* ReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B8A7604282935D400B1A461 /* ReusableView.swift */; };
 		8BDD97BB281AA2F600608FF5 /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BDD97BA281AA2F600608FF5 /* Router.swift */; };
 		8BDD97BD281AA68400608FF5 /* ServiceLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BDD97BC281AA68400608FF5 /* ServiceLayer.swift */; };
 		8BDE6D81280EB9D4008E501F /* UIImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BDE6D80280EB9D4008E501F /* UIImageView.swift */; };
@@ -107,6 +108,7 @@
 		8B504C3D28060ECC00DCE72A /* TopNewsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopNewsTableViewCell.swift; sourceTree = "<group>"; };
 		8B504C41280840D700DCE72A /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		8B504C442809734400DCE72A /* MapNewsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapNewsCell.swift; sourceTree = "<group>"; };
+		8B8A7604282935D400B1A461 /* ReusableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReusableView.swift; sourceTree = "<group>"; };
 		8BDD97BA281AA2F600608FF5 /* Router.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
 		8BDD97BC281AA68400608FF5 /* ServiceLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceLayer.swift; sourceTree = "<group>"; };
 		8BDE6D80280EB9D4008E501F /* UIImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageView.swift; sourceTree = "<group>"; };
@@ -277,6 +279,7 @@
 				8B504C2F2805BFA800DCE72A /* UIView.swift */,
 				8BDE6D80280EB9D4008E501F /* UIImageView.swift */,
 				8BDE6DC728116A28008E501F /* URL.swift */,
+				8B8A7604282935D400B1A461 /* ReusableView.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -583,6 +586,7 @@
 				8BDE6DCA281298F9008E501F /* NewsCellModel.swift in Sources */,
 				8B504C302805BFA800DCE72A /* UIView.swift in Sources */,
 				8B504C452809734400DCE72A /* MapNewsCell.swift in Sources */,
+				8B8A7605282935D400B1A461 /* ReusableView.swift in Sources */,
 				8BDD97BB281AA2F600608FF5 /* Router.swift in Sources */,
 				8B27B9A8281C756B005FFAFA /* Cache.swift in Sources */,
 				8B31380B281F248000D3CC66 /* Storage.swift in Sources */,

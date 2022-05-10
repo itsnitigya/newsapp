@@ -59,6 +59,9 @@ class HomeViewController: UIViewController {
     }
     
     @objc func viewArticles(_ notification: Notification) {
+        guard let cellViewModel = notification.userInfo?["content"] as? NewsCellModel else {
+            return
+        }
         if viewedArticles == false {
             let indexSet = IndexSet(integer: 3)
             DispatchQueue.main.async {
@@ -67,7 +70,6 @@ class HomeViewController: UIViewController {
                 })
             }
         }
-        let cellViewModel = notification.userInfo?["content"] as! NewsCellModel
         cellViewData.append(cellViewModel)
         viewedArticles = true
     }
@@ -116,7 +118,10 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cellId", for: indexPath) as! HomeViewTableCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "cellId",
+                                                       for: indexPath) as? HomeViewTableCell else {
+          return UITableViewCell()
+        }
         let row = indexPath.section
         cell.label.setTitle(data[row].label, for: .normal)
         cell.searchBar.isHidden = data[row].searchBarHidden
@@ -126,7 +131,9 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     @objc func subscribeTapped(_ sender: UIButton) {
-        var viewController = data[sender.tag].router as! UIViewController
+        guard var viewController = data[sender.tag].router as? UIViewController else {
+            return
+        }
         if sender.tag == 3 {
             viewController = NewsViewController(cellViewData: cellViewData,
                                                 pageType: .display, title: "Viewed Headlines")

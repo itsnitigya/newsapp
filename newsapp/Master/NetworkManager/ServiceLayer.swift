@@ -7,8 +7,14 @@
 
 import Alamofire
 
-class ServiceLayer {
-    class func request<T: Codable>(router: Router, completion: @escaping (DataResponse<T, AFError>) -> Void) {
+class ServiceLayer: NetworkRequestDelegate {
+    weak var delegate: NetworkResponseDelegate?
+    
+    func getData(router: Router) {
+        self.request(router: router)
+    }
+     
+    func request(router: Router) {
         var components = URLComponents()
         components.scheme = router.routerSettings.scheme
         components.host = router.routerSettings.host
@@ -18,8 +24,22 @@ class ServiceLayer {
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = router.routerSettings.scheme
         let request = AF.request(url)
-        request.responseDecodable(of: T.self) {  (response) in
-            completion(response)
+        request.responseDecodable(of: ArticleResponse.self) { [weak self] (response) in
+            print(response)
+            if response.error != nil && response.value == nil {
+                self?.delegate?.handleError()
+            } else {
+                self?.delegate?.parseResponse(data: response.value!)
+            }
         }
     }
+}
+
+protocol NetworkRequestDelegate: AnyObject {
+    func getData(router: Router)
+}
+
+protocol NetworkResponseDelegate: AnyObject {
+    func parseResponse(data: ArticleResponse)
+    func handleError()
 }
